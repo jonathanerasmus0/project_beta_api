@@ -1,0 +1,16 @@
+<!-- templates/api_root.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Root Page</title>
+</head>
+<body>
+    <h1>Welcome to the API</h1>
+    <p>Below are the available endpoints:</p>
+    <ul>
+        {% for name, url in endpoints.items %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Currency Conversion Result</title>
+</head>
+<body>
+    <h1>Currency Conversion Result</h1>
+    <p>{{ amount }} {{ from_currency }} is {{ converted_amount }} {{ to_currency }}</p>
+    <a href="{% url 'currency_conversion' %}">Convert another amount</a>
+</body>
+</html>

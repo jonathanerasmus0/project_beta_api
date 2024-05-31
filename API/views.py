@@ -1,7 +1,6 @@
 from django.shortcuts import render
-from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
-from rest_framework import viewsets, serializers  # Import serializers from rest_framework
+from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -10,10 +9,10 @@ from .models import Wallet, Account, Transaction
 from .serializers import WalletSerializer, AccountSerializer, TransactionSerializer
 from .permissions import IsAdminUser, IsPaidUser, IsFreeUser, IsAccountant
 from .utils import convert_currency
-from .forms import CurrencyConversionForm  # Import the form
+from .forms import CurrencyConversionForm
 from django.utils import timezone
 from decimal import Decimal
-from rest_framework.decorators import action  # Import the action decorator
+from rest_framework.decorators import action
 
 class APIRootView(APIView):
     permission_classes = [IsAuthenticated]
@@ -71,7 +70,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
         currency = serializer.validated_data['currency']
         user = self.request.user
 
-        # Convert currency if needed
         if currency != user.account.currency:
             amount = convert_currency(amount, currency, user.account.currency)
             currency = user.account.currency
@@ -81,7 +79,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
         serializer.save(performed_by=user, amount=amount, currency=currency)
 
-@staff_member_required
 def currency_conversion_view(request):
     if request.method == 'POST':
         form = CurrencyConversionForm(request.POST)
@@ -90,7 +87,12 @@ def currency_conversion_view(request):
             from_currency = form.cleaned_data['from_currency']
             to_currency = form.cleaned_data['to_currency']
             converted_amount = convert_currency(amount, from_currency, to_currency)
-            return HttpResponse(f"{amount} {from_currency} is {converted_amount} {to_currency}")
+            return render(request, 'currency_conversion_result.html', {
+                'amount': amount,
+                'from_currency': from_currency,
+                'to_currency': to_currency,
+                'converted_amount': converted_amount
+            })
     else:
         form = CurrencyConversionForm()
-    return render(request, 'admin/currency_conversion.html', {'form': form})
+    return render(request, 'currency_conversion.html', {'form': form})

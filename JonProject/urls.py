@@ -17,5 +17,5 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('', APIRootView.as_view(), name='api-root'),
-    path('admin/currency-conversion/', currency_conversion_view, name='currency_conversion'),
+    path('currency-conversion/', currency_conversion_view, name='currency_conversion'),
 ]

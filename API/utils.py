@@ -29,10 +29,3 @@ def convert_currency(amount, from_currency, to_currency):
         raise CurrencyConversionException(detail=f"Decimal conversion error: {e}")
     except ValueError as e:
         raise CurrencyConversionException(detail=f"Value error: {e}")
-
-# Example usage
-try:
-    result = convert_currency(100, 'USD', 'EUR')
-    print(f"Converted amount: {result}")
-except Exception as e:
-    print(f"An error occurred: {e}")

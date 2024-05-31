@@ -9,10 +9,40 @@
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Manage Your Accounts</h1>
-        <!-- Add account management functionalities here -->
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>Owner</th>
+                    <th>Account Type</th>
+                    <th>Currency</th>
+                    <th>Tier</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in accounts %}
+                    <tr>
+                        <td>{{ account.owner.username }}</td>
+                        <td>{{ account.account_type }}</td>
+                        <td>{{ account.currency }}</td>
+                        <td>{{ account.tier }}</td>
+                        <td>
+                            <a href="{% url 'account_edit' account.id %}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'account_delete' account.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2 class="text-center mt-4">Add Account</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success btn-block">Add Account</button>
+        </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

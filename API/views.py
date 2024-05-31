@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
@@ -9,7 +9,7 @@ from .models import Wallet, Account, Transaction
 from .serializers import WalletSerializer, AccountSerializer, TransactionSerializer
 from .permissions import IsAdminUser, IsPaidUser, IsFreeUser, IsAccountant
 from .utils import convert_currency, CurrencyConversionException
-from .forms import CurrencyConversionForm
+from .forms import CurrencyConversionForm, WalletForm, AccountForm, TransactionForm
 from django.utils import timezone
 from decimal import Decimal
 from rest_framework.decorators import action
@@ -116,10 +116,94 @@ def home_view(request):
     return render(request, 'home.html')
 
 def wallet_view(request):
-    return render(request, 'wallet.html')
+    wallets = Wallet.objects.all()
+    if request.method == 'POST':
+        form = WalletForm(request.POST)
+        if form.is_valid():
+            wallet = form.save(commit=False)
+            wallet.owner = request.user
+            wallet.save()
+            return redirect('wallet')
+    else:
+        form = WalletForm()
+    return render(request, 'wallet.html', {'wallets': wallets, 'form': form})
+
+def wallet_edit_view(request, pk):
+    wallet = get_object_or_404(Wallet, pk=pk)
+    if request.method == 'POST':
+        form = WalletForm(request.POST, instance=wallet)
+        if form.is_valid():
+            form.save()
+            return redirect('wallet')
+    else:
+        form = WalletForm(instance=wallet)
+    return render(request, 'wallet_edit.html', {'form': form, 'wallet': wallet})
+
+def wallet_delete_view(request, pk):
+    wallet = get_object_or_404(Wallet, pk=pk)
+    if request.method == 'POST':
+        wallet.delete()
+        return redirect('wallet')
+    return render(request, 'wallet_delete.html', {'wallet': wallet})
 
 def account_view(request):
-    return render(request, 'account.html')
+    accounts = Account.objects.all()
+    if request.method == 'POST':
+        form = AccountForm(request.POST)
+        if form.is_valid():
+            account = form.save(commit=False)
+            account.owner = request.user
+            account.save()
+            return redirect('account')
+    else:
+        form = AccountForm()
+    return render(request, 'account.html', {'accounts': accounts, 'form': form})
+
+def account_edit_view(request, pk):
+    account = get_object_or_404(Account, pk=pk)
+    if request.method == 'POST':
+        form = AccountForm(request.POST, instance=account)
+        if form.is_valid():
+            form.save()
+            return redirect('account')
+    else:
+        form = AccountForm(instance=account)
+    return render(request, 'account_edit.html', {'form': form, 'account': account})
+
+def account_delete_view(request, pk):
+    account = get_object_or_404(Account, pk=pk)
+    if request.method == 'POST':
+        account.delete()
+        return redirect('account')
+    return render(request, 'account_delete.html', {'account': account})
 
 def transaction_view(request):
-    return render(request, 'transaction.html')
+    transactions = Transaction.objects.all()
+    if request.method == 'POST':
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            transaction.performed_by = request.user
+            transaction.save()
+            return redirect('transaction')
+    else:
+        form = TransactionForm()
+    return render(request, 'transaction.html', {'transactions': transactions, 'form': form})
+
+def transaction_edit_view(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk)
+    if request.method == 'POST':
+        form = TransactionForm(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            return redirect('transaction')
+    else:
+        form = TransactionForm(instance=transaction)
+    return render(request, 'transaction_edit.html', {'form': form, 'transaction': transaction})
+
+def transaction_delete_view(request, pk):
+    transaction = get_object_or_404(Transaction, pk=pk)
+    if request.method == 'POST':
+        transaction.delete()
+        return redirect('transaction')
+    return render(request, 'transaction_delete.html', {'transaction': transaction})

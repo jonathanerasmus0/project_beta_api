@@ -9,10 +9,44 @@
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Manage Your Transactions</h1>
-        <!-- Add transaction management functionalities here -->
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>Performed By</th>
+                    <th>Transaction Type</th>
+                    <th>Currency</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Date Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.performed_by.username }}</td>
+                        <td>{{ transaction.transaction_type }}</td>
+                        <td>{{ transaction.currency }}</td>
+                        <td>{{ transaction.category }}</td>
+                        <td>{{ transaction.amount }}</td>
+                        <td>{{ transaction.date_created }}</td>
+                        <td>
+                            <a href="{% url 'transaction_edit' transaction.id %}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'transaction_delete' transaction.id %}" class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h2 class="text-center mt-4">Add Transaction</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success btn-block">Add Transaction</button>
+        </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

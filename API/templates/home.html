@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Currency Conversion Result</title>
+    <title>Home</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center">Currency Conversion Result</h1>
-        <div class="alert alert-info text-center mt-4">
-            <p>{{ amount }} {{ from_currency }} is <strong>{{ converted_amount }}</strong> {{ to_currency }}</p>
-        </div>
-        <div class="text-center mt-4">
-            <a href="{% url 'currency_conversion' %}" class="btn btn-secondary">Convert another amount</a>
+        <h1 class="text-center">Welcome Jonathan's Financial System </h1>
+        <div class="mt-4 text-center">
+            <a href="{% url 'wallet' %}" class="btn btn-primary">Manage Wallet</a>
+            <a href="{% url 'account' %}" class="btn btn-primary">Manage Account</a>
+            <a href="{% url 'transaction' %}" class="btn btn-primary">Manage Transactions</a>
+            <a href="{% url 'currency_conversion' %}" class="btn btn-primary">Currency Conversion</a>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

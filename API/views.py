@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from rest_framework import viewsets, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,12 +8,13 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Wallet, Account, Transaction
 from .serializers import WalletSerializer, AccountSerializer, TransactionSerializer
 from .permissions import IsAdminUser, IsPaidUser, IsFreeUser, IsAccountant
-from .utils import convert_currency
+from .utils import convert_currency, CurrencyConversionException
 from .forms import CurrencyConversionForm
 from django.utils import timezone
 from decimal import Decimal
 from rest_framework.decorators import action
 
+# API Views
 class APIRootView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -80,19 +81,45 @@ class TransactionViewSet(viewsets.ModelViewSet):
         serializer.save(performed_by=user, amount=amount, currency=currency)
 
 def currency_conversion_view(request):
-    if request.method == 'POST':
-        form = CurrencyConversionForm(request.POST)
-        if form.is_valid():
-            amount = form.cleaned_data['amount']
-            from_currency = form.cleaned_data['from_currency']
-            to_currency = form.cleaned_data['to_currency']
+    form = CurrencyConversionForm(request.POST or None)
+    
+    if request.method == 'POST' and form.is_valid():
+        amount = form.cleaned_data['amount']
+        from_currency = form.cleaned_data['from_currency']
+        to_currency = form.cleaned_data['to_currency']
+        try:
             converted_amount = convert_currency(amount, from_currency, to_currency)
-            return render(request, 'currency_conversion_result.html', {
-                'amount': amount,
-                'from_currency': from_currency,
-                'to_currency': to_currency,
-                'converted_amount': converted_amount
+            return redirect(reverse('currency_conversion_result') + f'?amount={amount}&from_currency={from_currency}&to_currency={to_currency}&converted_amount={converted_amount}')
+        except CurrencyConversionException as e:
+            return render(request, 'currency_conversion.html', {
+                'form': form,
+                'error': str(e.detail)
             })
-    else:
-        form = CurrencyConversionForm()
+    
     return render(request, 'currency_conversion.html', {'form': form})
+
+def currency_conversion_result_view(request):
+    amount = request.GET.get('amount')
+    from_currency = request.GET.get('from_currency')
+    to_currency = request.GET.get('to_currency')
+    converted_amount = request.GET.get('converted_amount')
+
+    return render(request, 'currency_conversion_result.html', {
+        'amount': amount,
+        'from_currency': from_currency,
+        'to_currency': to_currency,
+        'converted_amount': converted_amount
+    })
+
+# Front-end Views
+def home_view(request):
+    return render(request, 'home.html')
+
+def wallet_view(request):
+    return render(request, 'wallet.html')
+
+def account_view(request):
+    return render(request, 'account.html')
+
+def transaction_view(request):
+    return render(request, 'transaction.html')
